@@ -1,4 +1,4 @@
-"use client"
+'use client';
 
 import css from './Notes.module.css';
 import { useState } from 'react';
@@ -11,15 +11,19 @@ import SearchBox from '../../../../components/SearchBox/SearchBox';
 import Link from 'next/link';
 
 interface NotesClientProps {
-  initialPage: number,
-  initialQuery: string,
-  initialTag: string | undefined
+  initialPage: number;
+  initialQuery: string;
+  initialTag?: string;
 }
 
-export default function NotesClient({ initialPage = 1, initialQuery = '', initialTag = undefined }: NotesClientProps) {
+export default function NotesClient({
+  initialPage = 1,
+  initialQuery = '',
+  initialTag,
+}: NotesClientProps) {
   const [page, setPage] = useState(initialPage);
-  const [searchQuery, setSearchQuery] = useState<string>(initialQuery);
-  const [tag] = useState<string | undefined>(initialTag)
+  const [searchQuery, setSearchQuery] = useState(initialQuery);
+
   const [debouncedQuery] = useDebounce(searchQuery, 500);
 
   const handleSearchChange = (query: string) => {
@@ -28,8 +32,8 @@ export default function NotesClient({ initialPage = 1, initialQuery = '', initia
   };
 
   const { data, isLoading, isError, isSuccess } = useQuery({
-    queryKey: ['notes', page, debouncedQuery, tag],
-    queryFn: () => fetchNotes(debouncedQuery, page, tag),
+    queryKey: ['notes', page, debouncedQuery, initialTag],
+    queryFn: () => fetchNotes(debouncedQuery, page, initialTag),
     placeholderData: keepPreviousData,
     refetchOnMount: false,
   });
@@ -47,7 +51,6 @@ export default function NotesClient({ initialPage = 1, initialQuery = '', initia
           />
         )}
 
-     
         <Link href="/notes/action/create">
           <button className={css.button}>Create note +</button>
         </Link>
